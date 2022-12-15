@@ -3,6 +3,9 @@
 # >$env:FLASK_APP="application.py"
 # >flask run
 
+#       requirements.txt needs to be updated before 
+#       pushing to production
+# >pip freeze > requirements.txt
 
 #       SETUP AND PUSH YOUR CODE TO GETHUB VIA COMMANDLINE
 # > git init
