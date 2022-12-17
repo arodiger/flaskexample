@@ -28,4 +28,12 @@
 #       PUSHES CODE INTO GITHUB 
 #       (if aws is linked code changes will be auto deployed onto webserver, via CodePipeline)
 
+#       db support requirements
+# > pip install Flask-SQLAlchemy
+
+#       sending JSON with PUT/POST
+#       if using request object 
+#> requests.put(url, json=data2)
+        if using curl
+#> curl http://localhost:5000/video json={dictionary} 
 
