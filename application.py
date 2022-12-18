@@ -27,8 +27,10 @@ def abortIfVideoExists(video_id):
 
 class Video(Resource):                                  #create resource class and methods that will satisfy api calls
     def get(self, video_id):
-        abortIfVideoIdDoesntExist(video_id)
-        return videos[video_id]
+        if video_id not in videos:
+            return videos                               #return entire dictionary
+        else:
+            return videos[video_id]
 
     def put(self, video_id):
         abortIfVideoExists(video_id)
