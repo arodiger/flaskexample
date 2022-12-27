@@ -1,8 +1,11 @@
 from flask import Flask
 from views import views
 from flask_restful import Api, Resource, reqparse, abort
+from flask_socketio import SocketIO, send
+
 
 application = Flask(__name__)
+socketio = SocketIO(application, cors_allowed_origins="*")  #setup socket
 
 application.register_blueprint(views,url_prefix="/")    #setup my views.py file to handle the direction of pages
 api = Api(application)                                  #wrap our application with the api
@@ -48,11 +51,18 @@ class Video(Resource):                                  #create resource class a
         # del videos[video_id]
         return "", 204
 
+@socketio.on('message')
+def handle_message(message):
+    print("Received message: " + message)
+    if message != "User connected!":
+        send(message, broadcast=True)
+
 
 api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
 api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource
 
 if __name__ == "__main__":
-    application.run(debug=True)
+    socketio.run(application,host="localhost", port=5000)
+    application.run(debug=False)
 
 
