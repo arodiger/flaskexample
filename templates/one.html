@@ -5,13 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One</title>
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js" integrity="sha512-HTENHrkQ/P0NGDFd5nk6ibVtCkcM7jhr2c7GyvXp5O+4X6O5cQO9AhqFzM+MdeBivsX7Hoys2J7pp2wdgMpCvw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-<!----    <div><h1>Page One</h1>
-    <p>Parameter passed: {{ pageOneParam1 }}</p>
-    </div>    -->
     <script type="text/javascript">
         $(document).ready(function() {
             var socket = io.connect("http://anthonyrodiger.com")
@@ -20,7 +18,7 @@
             });
 
             socket.on('message', function(data) {
-                $('#messages').append($('<p>').text(data));
+                $('#messages').append($('<p class="message">').text(data));
             });
             
             $('#sendBtn').on('click', function() {
@@ -29,11 +27,22 @@
             });
         })    
     </script>
-    <div id="messages">
+    <div class="container">
+        <div class="header">
+            <H1>WebChat</H1>
+        </div>
+        <div id="messages" class="body">
 
+        </div>
+        <div class="footer"> 
+            <div class="firstinput">
+                <input type="text" id="username" placeholder="Username">
+                <input type="text" id="message" placeholder="Message">
+            </div>
+            <div class="button1">
+                <button class="button1" id="sendBtn">Send</button>    
+            </div>
+        </div>
     </div>
-    <input type="text" id="username" placeholder="Username">
-    <input type="text" id="message" placeholder="Message">
-    <button id="sendBtn">Send</button>    
 </body>
 </html>
