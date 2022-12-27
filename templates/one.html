@@ -14,7 +14,7 @@
     </div>    -->
     <script type="text/javascript">
         $(document).ready(function() {
-            var socket = io.connect("http://localhost:5000")
+            var socket = io.connect("http://anthonyrodiger.com")
             socket.on('connect', function() {
                 socket.send("User connected!");
             });
