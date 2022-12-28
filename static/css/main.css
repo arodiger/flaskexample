@@ -18,7 +18,6 @@ body{
     flex-direction: column;
     box-shadow: 2px 2px 20px rgba(0,0,0,0.4);
     background-color: dodgerblue;
-    overflow-y:auto;
 }
 .header h1{
     color: white;
@@ -28,7 +27,10 @@ body{
     flex: 1;
     color: white;
     background-color: rgba(0,0,0,0.7);
-    padding: 20px 30px
+    padding: 20px 30px;
+    overflow: auto;
+/*    overflow-y:auto; */
+/*    overflow-x:auto; */
 }
 .message{
     background-color: dodgerblue;

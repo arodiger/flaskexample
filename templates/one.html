@@ -12,11 +12,14 @@
 <body>
     <script type="text/javascript">
         $(document).ready(function() {
+//            var socket = io.connect("http://127.0.0.1:5000")
             var socket = io.connect("http://anthonyrodiger.com")
             socket.on('connect', function() {
                 socket.send("User connected!");
             });
-
+            //catch message from server and place in message body
+            //if current client sent message place in user message div
+            //otherwise place in incoming message div
             socket.on('message', function(data) {
                 if (data.includes($('#username').val()) ) {
                     $('#messages').append($('<p class="user_message">').text(data));
@@ -24,27 +27,38 @@
                 else{
                     $('#messages').append($('<p class="message">').text(data));
                 }
+                //always scroll to bottom of messages
+                var body = document.querySelector('#messages');
+                body.scrollTop = body.scrollHeight - body.clientHeight;
             });
-            
+            //upone button click send message to server to be broadcast            
             $('#sendBtn').on('click', function() {
                 socket.send($('#username').val() + ': ' + $('#message').val());
                 $('#messsage').val('');
                 clearFields();
             });
         })   
-        
+        //clear out old chat message box once message is sent        
         function clearFields() {
             document.getElementById("message").value = "";
         }
-        
+
+        //add ability to acknowledge enter on keyboard has been pressed
+//        document.getElementById("message").addEventListener("keyup", function(event) {
+//            event.preventDefault();
+//            if (event.keyCode === 13) {
+//                document.getElementById("sendBtn").click();
+//            }
+//        });
+
     </script>
     <div class="container">
         <div class="header">
             <H1>{{pageOneParam1}}</H1>
         </div>
-        <div id="messages" class="body">
+            <div id="messages" class="body">
 
-        </div>
+            </div>
         <div class="footer"> 
             <div class="firstinput">
                 <input type="text" id="username" class="userNameClass" placeholder="Username">
