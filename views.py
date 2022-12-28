@@ -12,7 +12,7 @@ def home():
 
 @views.route('/one')
 def One():
-    return render_template("one.html", pageOneParam1="Page one param #1")
+    return render_template("one.html", pageOneParam1="WebChat")
 
 @views.route('/two')
 def two():

@@ -51,6 +51,7 @@ class Video(Resource):                                  #create resource class a
         # del videos[video_id]
         return "", 204
 
+# socket handler will take message and broadcast out to all connected users
 @socketio.on('message')
 def handle_message(message):
     print("Received message: " + message)
@@ -62,7 +63,7 @@ api.add_resource(Video, "/video/<int:video_id>")        #register video class as
 api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource
 
 if __name__ == "__main__":
-    socketio.run(application,host="localhost", port=5000)
+    socketio.run(application,host="localhost", port=5000, debug=False, log_output=False)
     application.run(debug=False)
 
 

@@ -18,26 +18,37 @@
             });
 
             socket.on('message', function(data) {
-                $('#messages').append($('<p class="message">').text(data));
+                if (data.includes($('#username').val()) ) {
+                    $('#messages').append($('<p class="user_message">').text(data));
+                }
+                else{
+                    $('#messages').append($('<p class="message">').text(data));
+                }
             });
             
             $('#sendBtn').on('click', function() {
                 socket.send($('#username').val() + ': ' + $('#message').val());
                 $('#messsage').val('');
+                clearFields();
             });
-        })    
+        })   
+        
+        function clearFields() {
+            document.getElementById("message").value = "";
+        }
+        
     </script>
     <div class="container">
         <div class="header">
-            <H1>WebChat</H1>
+            <H1>{{pageOneParam1}}</H1>
         </div>
         <div id="messages" class="body">
 
         </div>
         <div class="footer"> 
             <div class="firstinput">
-                <input type="text" id="username" placeholder="Username">
-                <input type="text" id="message" placeholder="Message">
+                <input type="text" id="username" class="userNameClass" placeholder="Username">
+                <input type="text" id="message" class="messageClass" placeholder="Chat Message">
             </div>
             <div class="button1">
                 <button class="button1" id="sendBtn">Send</button>    
