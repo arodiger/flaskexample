@@ -12,7 +12,7 @@ body{
     align-items: center;
 }
 .container{
-    width: 450px;
+    width: 350px;
     height: 80vh;
     display: flex;
     flex-direction: column;
@@ -39,6 +39,7 @@ body{
     width: fit-content;
     border-radius: 10px;
     margin-bottom: 15px;
+    word-wrap: break-word;
 }
 .user_message{
     margin-left: auto;
@@ -48,6 +49,7 @@ body{
     width: fit-content;
     border-radius: 10px;
     margin-bottom: 15px;
+    word-wrap: break-word;
 }
 .footer{
     display: flex;
@@ -65,10 +67,12 @@ body{
 .userNameClass{
     border-radius: 15px;
     padding: 5px;
+    width: 145px;
 }
 .messageClass{
     border-radius: 15px;
     padding: 5px;
+    width: 145px;
 }
 .button1{
     padding: 5px;
