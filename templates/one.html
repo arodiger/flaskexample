@@ -47,7 +47,7 @@
                     document.getElementById("username").focus();
                 }
                 else{
-                    socket.send($('#username').val() + ': ' + $('#message').val());
+                    socket.send($('#username').val() + ':' + $('#message').val());
                     $('#messsage').val('');
                     //if we have our username then grayout textbox
                     if (userName == "") {

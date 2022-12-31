@@ -51,6 +51,8 @@ class Video(Resource):                                  #create resource class a
         # del videos[video_id]
         return "", 204
 
+webChat = {}
+tempList = []
 # Flask-SocketIO, registering handlers for events
 # socket handler accepts message and broadcast out to all connected users
 # this handler uses string messages
@@ -58,24 +60,28 @@ class Video(Resource):                                  #create resource class a
 def handle_message(message):
     print("SERVER Received message: " + message)
     if message != "User connected!":
-        send(message, broadcast=True)
+        tempList = message.split(":")
+        webChat = {"username": tempList[0], "message": tempList[1]}
+        print(webChat)
+        if ( len(webChat["message"]) > 0):              #only send msg if there is data
+            send(message, broadcast=True)
 
-# this handler uses JSON data
-@socketio.on('json')
-def handle_json(json):
-    print("SERVER Received JSON message: " + str(json))
+# # this handler uses JSON data
+# @socketio.on('json')
+# def handle_json(json):
+#     print("SERVER Received JSON message: " + str(json))
 
-# registering connect handler 
-@socketio.on('connect')
-def test_connect(auth):
-    send('Client Connected', broadcast=True)
-    print(f"SERVER Client connected message: {auth}")
+# # registering connect handler 
+# @socketio.on('connect')
+# def test_connect(auth):
+#     send('Client Connected', broadcast=True)
+#     print(f"SERVER Client connected message: {auth}")
 
-# registering disconnect handler 
-@socketio.on('disconnect')
-def test_disconnect():
-    send('Client disconnected', broadcast=True)
-    print("SERVER Client disconnected message: ")
+# # registering disconnect handler 
+# @socketio.on('disconnect')
+# def test_disconnect():
+#     send('Client disconnected', broadcast=True)
+#     print("SERVER Client disconnected message: ")
 
 
 api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
