@@ -5,7 +5,7 @@ from flask_socketio import SocketIO, send
 
 
 application = Flask(__name__)
-socketio = SocketIO(application, cors_allowed_origins="*")  #setup socket
+socketio = SocketIO(application,logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
 application.register_blueprint(views,url_prefix="/")    #setup my views.py file to handle the direction of pages
 api = Api(application)                                  #wrap our application with the api
@@ -51,12 +51,31 @@ class Video(Resource):                                  #create resource class a
         # del videos[video_id]
         return "", 204
 
-# socket handler will take message and broadcast out to all connected users
+# Flask-SocketIO, registering handlers for events
+# socket handler accepts message and broadcast out to all connected users
+# this handler uses string messages
 @socketio.on('message')
 def handle_message(message):
-    print("Received message: " + message)
+    print("SERVER Received message: " + message)
     if message != "User connected!":
         send(message, broadcast=True)
+
+# this handler uses JSON data
+@socketio.on('json')
+def handle_json(json):
+    print("SERVER Received JSON message: " + str(json))
+
+# registering connect handler 
+@socketio.on('connect')
+def test_connect(auth):
+    send('Client Connected', broadcast=True)
+    print(f"SERVER Client connected message: {auth}")
+
+# registering disconnect handler 
+@socketio.on('disconnect')
+def test_disconnect():
+    send('Client disconnected', broadcast=True)
+    print("SERVER Client disconnected message: ")
 
 
 api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource

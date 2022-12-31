@@ -96,3 +96,6 @@ body{
     transition: 0.2s ease;
     display: flex;
 }
+.blurredDefaultText {
+    color:#888 !important;
+}

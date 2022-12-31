@@ -11,12 +11,20 @@
 </head>
 <body>
     <script type="text/javascript">
+        var userName = ""
+        var userLoggedIn = false
         $(document).ready(function() {
+            document.getElementById("message").setAttribute("readonly", "readonly");
+            document.getElementById("sendBtn").textContent = "Login";
+            document.getElementById("username").value = "";     //force firefox on a page reload to placeholder text
+            document.getElementById("username").focus();
 //            var socket = io.connect("http://127.0.0.1:5000")
             var socket = io.connect("http://anthonyrodiger.com")
+
             socket.on('connect', function() {
-                socket.send("User connected!");
+//                    socket.send( "LOGDATA:  Socket connection established!");
             });
+
             //catch message from server and place in message body
             //if current client sent message place in user message div
             //otherwise place in incoming message div
@@ -31,16 +39,41 @@
                 var body = document.querySelector('#messages');
                 body.scrollTop = body.scrollHeight - body.clientHeight;
             });
-            //upone button click send message to server to be broadcast            
+
+            //upon button click send message to server to be broadcast   
+            //require a username before sending messages         
             $('#sendBtn').on('click', function() {
-                socket.send($('#username').val() + ': ' + $('#message').val());
-                $('#messsage').val('');
+                if ( $('#username').val() == "" ) {             
+                    document.getElementById("username").focus();
+                }
+                else{
+                    socket.send($('#username').val() + ': ' + $('#message').val());
+                    $('#messsage').val('');
+                    //if we have our username then grayout textbox
+                    if (userName == "") {
+                        userName = $('#username').val()
+                        document.getElementById("username").setAttribute("readonly", "readonly");
+                        inputBlur('#username');
+                        document.getElementById("message").removeAttribute("readonly");
+                        document.getElementById("message").focus();
+                        document.getElementById("sendBtn").textContent = "Send";
+                        userLoggedIn = true;
+                    }
+                    else{
+                    
+                    }
+                }
+                
                 clearFields();
+
             });
         })   
         //clear out old chat message box once message is sent        
         function clearFields() {
             document.getElementById("message").value = "";
+        }
+        function inputBlur(i){
+            $(i).addClass("blurredDefaultText");
         }
 
     </script>
@@ -53,8 +86,8 @@
             </div>
         <div class="footer"> 
             <div class="firstinput">
-                <input type="text" id="username" class="userNameClass" placeholder="Username">
-                <input type="text" id="message" class="messageClass" onkeyup="check_for_enter(event);" placeholder="Chat Message">
+                <input type="text" id="username" class="userNameClass" autofocus placeholder="Username">
+                <input type="text" id="message" class="messageClass" onkeyup="check_for_enter(event);" placeholder="">
                 <button type="button" class="button1" id="sendBtn">Send</button>    
             </div>
         </div>
@@ -70,8 +103,7 @@
 //            }
 //        }
 
-        //add ability to acknowledge enter on keyboard has been pressed
-        //dirty way (html inline call) to detect onkeyup event occurred in chat message text
+        //DIRTY FIX way (html inline call) to detect onkeyup event occurred in chat message text
         //addEventListener in js is not working, possibly due to socketio interference???
         function check_for_enter(event) {
             event.preventDefault();
