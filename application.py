@@ -1,11 +1,13 @@
-from flask import Flask
+from flask import Flask, request
 from views import views
 from flask_restful import Api, Resource, reqparse, abort
 from flask_socketio import SocketIO, send
+from flask_session import Session
 
 
 application = Flask(__name__)
-socketio = SocketIO(application,logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
+Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
+socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
 application.register_blueprint(views,url_prefix="/")    #setup my views.py file to handle the direction of pages
 api = Api(application)                                  #wrap our application with the api
@@ -51,38 +53,53 @@ class Video(Resource):                                  #create resource class a
         # del videos[video_id]
         return "", 204
 
+currentLoggedInSessions = []
+chatHistory = []
 webChat = {}
-tempList = []
+usernameMessage = []
+LOADHISTORY = "LOADHISTORY"
 # Flask-SocketIO, registering handlers for events
 # socket handler accepts message and broadcast out to all connected users
 # this handler uses string messages
 @socketio.on('message')
 def handle_message(message):
-    print("SERVER Received message: " + message)
-    if message != "User connected!":
-        tempList = message.split(":")
-        webChat = {"username": tempList[0], "message": tempList[1]}
-        print(webChat)
+    usernameMessage = message.split(":")
+    webChat = {"username": usernameMessage[0], "message": usernameMessage[1]}
+    clientSession = request.sid
+    if clientSession not in currentLoggedInSessions:
+        currentLoggedInSessions.append(clientSession)
+    print(webChat)
+    if (webChat["username"] == LOADHISTORY ):
+        for entry in chatHistory:
+            msg = entry["username"] + ":" + entry["message"]
+            send(msg, to=clientSession)
+    else:
         if ( len(webChat["message"]) > 0):              #only send msg if there is data
             send(message, broadcast=True)
+            chatHistory.append(webChat)
+            print(chatHistory)
 
 # # this handler uses JSON data
 # @socketio.on('json')
 # def handle_json(json):
 #     print("SERVER Received JSON message: " + str(json))
 
-# # registering connect handler 
+# registering connect handler 
 # @socketio.on('connect')
 # def test_connect(auth):
-#     send('Client Connected', broadcast=True)
-#     print(f"SERVER Client connected message: {auth}")
+#    print(f"************ONCONNECT***********************")
+    # temp = request.sid
+#    print(f"************{temp}***********************")
+#    print(f"************ONCONNECT***********************")
+#    send('{auth}', broadcast=True)
+#    send('Client Connected', broadcast=True)
+#    print(f"SERVER Client connected message: {auth}")
 
-# # registering disconnect handler 
+# registering disconnect handler 
 # @socketio.on('disconnect')
 # def test_disconnect():
 #     send('Client disconnected', broadcast=True)
 #     print("SERVER Client disconnected message: ")
-
 
 api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
 api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource

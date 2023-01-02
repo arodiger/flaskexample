@@ -21,13 +21,16 @@
 //            var socket = io.connect("http://127.0.0.1:5000")
             var socket = io.connect("http://anthonyrodiger.com")
 
-            socket.on('connect', function() {
+            socket.on('connect', function(auth) {                
+//                alert(auth)
 //                    socket.send( "LOGDATA:  Socket connection established!");
             });
 
             //catch message from server and place in message body
             //if current client sent message place in user message div
             //otherwise place in incoming message div
+            // ??? if (loadHistory == false) then we send(loadHistoryRequest)
+            // ???  ???
             socket.on('message', function(data) {
                 if (data.includes($('#username').val()) ) {
                     $('#messages').append($('<p class="user_message">').text(data));
@@ -43,13 +46,13 @@
             //upon button click send message to server to be broadcast   
             //require a username before sending messages         
             $('#sendBtn').on('click', function() {
-                if ( $('#username').val() == "" ) {             
+                if ( $('#username').val() == "" ) {       
                     document.getElementById("username").focus();
                 }
                 else{
+                    //may want to move this send message to bottom of else
                     socket.send($('#username').val() + ':' + $('#message').val());
-                    $('#messsage').val('');
-                    //if we have our username then grayout textbox
+                    //if we have our username then grayout and readonly username textbox
                     if (userName == "") {
                         userName = $('#username').val()
                         document.getElementById("username").setAttribute("readonly", "readonly");
@@ -58,14 +61,15 @@
                         document.getElementById("message").focus();
                         document.getElementById("sendBtn").textContent = "Send";
                         userLoggedIn = true;
+                        //alert("User Logged In ")
+                        //send message to load history, user just logged in
+                        socket.send("LOADHISTORY:"+userName);
                     }
                     else{
                     
                     }
                 }
-                
                 clearFields();
-
             });
         })   
         //clear out old chat message box once message is sent        
