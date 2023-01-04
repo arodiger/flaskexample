@@ -6,7 +6,6 @@ from flask_session import Session
 
 
 application = Flask(__name__)
-application.config()
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
