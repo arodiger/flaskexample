@@ -1,11 +1,12 @@
 from flask import Flask, request
 from views import views
 from flask_restful import Api, Resource, reqparse, abort
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, join_room, leave_room
 from flask_session import Session
 
 
 application = Flask(__name__)
+application.config()
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
@@ -53,36 +54,49 @@ class Video(Resource):                                  #create resource class a
         # del videos[video_id]
         return "", 204
 
-currentLoggedInSessions = []
-chatHistory = []
-webChat = {}
+chatRoomSessionList = []        # [ {chatRoomSession} ]
+chatRoomSession = {}            # {"sessionid":"" , "username": ""}
+currentLoggedInSessions = []    #[sessionid, sessionid]
+
+chatHistory = []                # [ {webChat}, {webChat}]
+webChat = {}                    # {username:"",message:""}
+
 usernameMessage = []
 LOADHISTORY = "LOADHISTORY"
 # Flask-SocketIO, registering handlers for events
 # socket handler accepts message and broadcast out to all connected users
-# this handler uses string messages
+# maybe i should ensure a user is part of a "room" and logged in before sending him messages
+# this would allow for messages to come and go, however only update application if logged into room
 @socketio.on('message')
 def handle_message(message):
+    global chatRoomSession
     usernameMessage = message.split(":")
     webChat = {"username": usernameMessage[0], "message": usernameMessage[1]}
     clientSession = request.sid
     if clientSession not in currentLoggedInSessions:
         currentLoggedInSessions.append(clientSession)
     print(webChat)
-    if (webChat["username"] == LOADHISTORY ):
+    if (webChat["username"] == LOADHISTORY ):           #client request to load history
         for entry in chatHistory:
             msg = entry["username"] + ":" + entry["message"]
-            send(msg, to=clientSession)
+            send(msg, to=clientSession)                 #only send history to client requesting
+
+        join_room('WebChatRoom')
+        chatRoomSession = { "sessionid": clientSession, "username": webChat["message"] }
+        chatRoomSessionList.append(chatRoomSession)
+
+        send(f'{webChat["message"]} has entered the chat.',to='WebChatRoom', include_self=False)
     else:
         if ( len(webChat["message"]) > 0):              #only send msg if there is data
             send(message, broadcast=True)
             chatHistory.append(webChat)
             print(chatHistory)
 
+
 # # this handler uses JSON data
-# @socketio.on('json')
-# def handle_json(json):
-#     print("SERVER Received JSON message: " + str(json))
+@socketio.on('json')
+def handle_json(json):
+    print("SERVER Received JSON message: " + str(json))
 
 # registering connect handler 
 # @socketio.on('connect')
@@ -96,10 +110,27 @@ def handle_message(message):
 #    print(f"SERVER Client connected message: {auth}")
 
 # registering disconnect handler 
-# @socketio.on('disconnect')
-# def test_disconnect():
-#     send('Client disconnected', broadcast=True)
-#     print("SERVER Client disconnected message: ")
+# remove the client from the client session list and from the chat room session dictionary
+# implement leave_room here, then we can add room to send(message,room)
+# send message to remaining clients who left the chat
+@socketio.on('disconnect')
+def test_disconnect():
+    clientSession = request.sid
+    if clientSession in currentLoggedInSessions:
+        currentLoggedInSessions.remove(clientSession)           #removed from session list
+
+    for chatRoomDict in chatRoomSessionList:
+        if chatRoomDict["sessionid"] == clientSession:
+            chatRoomSessionList.remove(chatRoomDict)            #removed from chat room session dictionary
+            send(f'{chatRoomDict["username"]} has left the chat',skip_sid=clientSession, broadcast=True)
+            leave_room("WebChatRoom", clientSession)
+
+
+
+# @socketio.on('join')
+# def on_join(data):
+#     send('someone has entered the room.')
+
 
 api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
 api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource
