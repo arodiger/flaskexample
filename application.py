@@ -58,33 +58,34 @@ chatRoomSession = {}            # {"sessionid":"" , "username": ""}
 currentLoggedInSessions = []    #[sessionid, sessionid]
 
 chatHistory = []                # [ {webChat}, {webChat}]
-webChat = {}                    # {username:"",message:""}
+webChat = {}                    # {"username":"", "message":"", "timestamp":"", "loadhistory":""}
 
 usernameMessage = []
 LOADHISTORY = "LOADHISTORY"
 # Flask-SocketIO, registering handlers for events
 # socket handler accepts message and broadcast out to all connected users
-# maybe i should ensure a user is part of a "room" and logged in before sending him messages
+# maybe i should ensure a user is part of a "room" and logged in before sending him messages YES
 # this would allow for messages to come and go, however only update application if logged into room
+# since socket connections can persist for sometime need to incorporate the "room" logic
 @socketio.on('message')
 def handle_message(message):
     global chatRoomSession
     usernameMessage = message.split(":")
-    webChat = {"username": usernameMessage[0], "message": usernameMessage[1]}
+    webChat = {"username": usernameMessage[0], "message": usernameMessage[1], "timestamp":usernameMessage[2], "loadhistory": usernameMessage[3]}
     clientSession = request.sid
     if clientSession not in currentLoggedInSessions:
         currentLoggedInSessions.append(clientSession)
     print(webChat)
-    if (webChat["username"] == LOADHISTORY ):           #client request to load history
+    if (webChat["loadhistory"] == LOADHISTORY ):           #client request to load history
         for entry in chatHistory:
-            msg = entry["username"] + ":" + entry["message"]
+            msg = entry["username"] + ":" + entry["message"] + ":" + entry["timestamp"]
             send(msg, to=clientSession)                 #only send history to client requesting
 
         join_room('WebChatRoom')
-        chatRoomSession = { "sessionid": clientSession, "username": webChat["message"] }
+        chatRoomSession = { "sessionid": clientSession, "username": webChat["username"] }
         chatRoomSessionList.append(chatRoomSession)
 
-        send(f'{webChat["message"]} has entered the chat.',to='WebChatRoom', include_self=False)
+        send(f'{webChat["username"]} : has entered the chat. :',to='WebChatRoom', include_self=False)
     else:
         if ( len(webChat["message"]) > 0):              #only send msg if there is data
             send(message, broadcast=True)
@@ -95,7 +96,9 @@ def handle_message(message):
 # # this handler uses JSON data
 @socketio.on('json')
 def handle_json(json):
+    print("***************************************************")
     print("SERVER Received JSON message: " + str(json))
+    print("***************************************************")
 
 # registering connect handler 
 # @socketio.on('connect')
@@ -121,7 +124,7 @@ def test_disconnect():
     for chatRoomDict in chatRoomSessionList:
         if chatRoomDict["sessionid"] == clientSession:
             chatRoomSessionList.remove(chatRoomDict)            #removed from chat room session dictionary
-            send(f'{chatRoomDict["username"]} has left the chat',skip_sid=clientSession, broadcast=True)
+            send(f'{chatRoomDict["username"]} : has left the chat:',skip_sid=clientSession, broadcast=True)
             leave_room("WebChatRoom", clientSession)
 
 

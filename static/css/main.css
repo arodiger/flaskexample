@@ -41,6 +41,8 @@ body{
     border-radius: 10px;
     margin-bottom: 15px;
     word-wrap: break-word;
+    line-height: 1em;
+    margin: 0em; 
 }
 .user_message{
     margin-left: auto;
@@ -51,6 +53,32 @@ body{
     border-radius: 10px;
     margin-bottom: 15px;
     word-wrap: break-word;
+    line-height: 1em;
+}
+.messageDateTime{
+/*    background-color: gray; */
+/*    margin-left: auto;  */
+    font-size: 9px;
+    padding: 5px;
+    color: white;
+    width: fit-content;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    line-height: 1em;
+    margin: 0em;
+}
+.usermessageDateTime{
+    margin-left: auto;
+/*    background-color: gray; */
+    padding: 5px;
+    color: white;
+    width: fit-content;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    font-size: 9px;
+    line-height: 1em;
 }
 .footer{
     display: flex;
