@@ -103,12 +103,6 @@ def handle_json(json):
 # registering connect handler 
 # @socketio.on('connect')
 # def test_connect(auth):
-#    print(f"************ONCONNECT***********************")
-    # temp = request.sid
-#    print(f"************{temp}***********************")
-#    print(f"************ONCONNECT***********************")
-#    send('{auth}', broadcast=True)
-#    send('Client Connected', broadcast=True)
 #    print(f"SERVER Client connected message: {auth}")
 
 # registering disconnect handler 

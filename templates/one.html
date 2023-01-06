@@ -29,24 +29,20 @@
             //catch message from server and place in message body
             //if current client sent message place in user message div
             //otherwise place in incoming message div
-            // ??? if (loadHistory == false) then we send(loadHistoryRequest)
-            // ???  ???
+            //if new login then send request to load history
             socket.on('message',  function(data) {
 
                 let text = data;
                 const myArray = text.split(":");
                 const date = new Date(parseInt(myArray[2]));
-//                alert(myArray);
 
                 if (data.includes($('#username').val()) ) {
-//                    $('#messages').append($('<p class="user_message">').text(data));
-                    $('#messages').append($('<p class="user_message">').text( myArray[0] + ":" + myArray[1]  ));
+                    $('#messages').append($('<p class="user_message">').text( myArray[1] ));
                     $('#messages').append($('<p class="usermessageDateTime">').text(date.toLocaleTimeString('en-US')));
                 }
                 else{
-//                    $('#messages').append($('<p class="messageDateTime">').text(date.toLocaleTimeString('en-US')));
-//                    $('#messages').append($('<p class="message">').text(  myArray[0] + ":" + myArray[1] ));
-                    $('#messages').append($('<p class="message">').text(  myArray[0] + ":" + myArray[1] ));
+                    $('#messages').append($('<b class="message">').text( myArray[0]  + ":" ));
+                    $('#messages').append($('<p class="message">').text(  myArray[1] ));
                     $('#messages').append($('<p class="messageDateTime">').text(date.toLocaleTimeString('en-US')));
                 }
                 //always scroll to bottom of messages
@@ -55,7 +51,8 @@
             });
 
             //upon button click send message to server to be broadcast   
-            //require a username before sending messages         
+            //require a username before sending messages     
+            //timestamp needs to come from client and stored as a millisecond integer    
             $('#sendBtn').on('click', function() {
                 if ( $('#username').val() == "" ) {       
                     document.getElementById("username").focus();
@@ -63,9 +60,7 @@
                 else{
                     //may want to move this send message to bottom of else
                     //username:message:loadhistory:timestamp
-//                    datetime = Date();
                     const d = new Date();
-//                    socket.send( $('#username').val() + ':' + $('#message').val() + ':'  );
                     socket.send( $('#username').val() + ':' + $('#message').val() + ':' + d.getTime() + ':'  );
                     //if we have our username then grayout and readonly username textbox
                     if (userName == "") {
@@ -76,9 +71,6 @@
                         document.getElementById("message").focus();
                         document.getElementById("sendBtn").textContent = "Send";
                         userLoggedIn = true;
-                        //alert("User Logged In ")
-                        //send message to load history, user just logged in
-//                        socket.send(userName+":"+":LOADHISTORY");  //no message is sent, just user and loadhistory request
                         socket.send(userName+":"+"::LOADHISTORY");  //no message is sent, just user and loadhistory request
                     }
                     else{
