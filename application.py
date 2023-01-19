@@ -3,7 +3,7 @@ from views import views
 from flask_restful import Api, Resource, reqparse, abort
 from flask_socketio import SocketIO, send, join_room, leave_room
 from flask_session import Session
-
+import mypyLogger
 
 application = Flask(__name__)
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
@@ -30,7 +30,7 @@ def abortIfVideoExists(video_id):
 
 class Users(Resource):
     def get(self, user_id):
-        print("inside get of tempUser")
+        mypyLogger.logger.debug("inside get of tempUser")
         return "", 200
 
 
@@ -58,7 +58,7 @@ chatRoomSession = {}            # {"sessionid":"" , "username": ""}
 currentLoggedInSessions = []    #[sessionid, sessionid]
 
 chatHistory = []                # [ {webChat}, {webChat}]
-webChat = {}                    # {"username":"", "message":"", "timestamp":"", "loadhistory":""}
+webChat = {}                    # {"username":"", "message":"", "time_stamp":"", "loadhistory":""}
 
 usernameMessage = []
 LOADHISTORY = "LOADHISTORY"
@@ -71,14 +71,14 @@ LOADHISTORY = "LOADHISTORY"
 def handle_message(message):
     global chatRoomSession
     usernameMessage = message.split(":")
-    webChat = {"username": usernameMessage[0], "message": usernameMessage[1], "timestamp":usernameMessage[2], "loadhistory": usernameMessage[3]}
+    webChat = {"username": usernameMessage[0], "message": usernameMessage[1], "time_stamp":usernameMessage[2], "loadhistory": usernameMessage[3]}
     clientSession = request.sid
     if clientSession not in currentLoggedInSessions:
         currentLoggedInSessions.append(clientSession)
-    print(webChat)
+    mypyLogger.logger.debug(webChat)
     if (webChat["loadhistory"] == LOADHISTORY ):           #client request to load history
         for entry in chatHistory:
-            msg = entry["username"] + ":" + entry["message"] + ":" + entry["timestamp"]
+            msg = entry["username"] + ":" + entry["message"] + ":" + entry["time_stamp"]
             send(msg, to=clientSession)                 #only send history to client requesting
 
         join_room('WebChatRoom')
@@ -90,19 +90,20 @@ def handle_message(message):
         if ( len(webChat["message"]) > 0):              #only send msg if there is data
             send(message, broadcast=True)
             chatHistory.append(webChat)
-            print(chatHistory)
+            mypyLogger.logger.debug(chatHistory)
 
 
 # # this handler uses JSON data
 @socketio.on('json')
 def handle_json(json):
-    print("***************************************************")
-    print("SERVER Received JSON message: " + str(json))
-    print("***************************************************")
+    mypyLogger.logger.debug("***************************************************")
+    mypyLogger.logger.debug("SERVER Received JSON message: " + str(json))
+    mypyLogger.logger.debug("***************************************************")
 
 # registering connect handler 
 # @socketio.on('connect')
 # def test_connect(auth):
+#    mypyLogger.logger.debug(f"SERVER Client connected message: {auth}")
 #    print(f"SERVER Client connected message: {auth}")
 
 # registering disconnect handler 
@@ -122,11 +123,9 @@ def test_disconnect():
             leave_room("WebChatRoom", clientSession)
 
 
-
 # @socketio.on('join')
 # def on_join(data):
 #     send('someone has entered the room.')
-
 
 api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
 api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource

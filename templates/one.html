@@ -18,18 +18,17 @@
             document.getElementById("sendBtn").textContent = "Login";
             document.getElementById("username").value = "";     //force firefox on a page reload to placeholder text
             document.getElementById("username").focus();
-//            var socket = io.connect("http://127.0.0.1:5000")
-            var socket = io.connect("http://anthonyrodiger.com")
+            var socket = io.connect("http://127.0.0.1:5000")
+//            var socket = io.connect("http://anthonyrodiger.com")
 
             socket.on('connect', function(auth) {                
 //                alert(auth)
 //                    socket.send( "LOGDATA:  Socket connection established!");
             });
 
-            //catch message from server and place in message body
-            //if current client sent message place in user message div
-            //otherwise place in incoming message div
-            //if new login then send request to load history
+            //catch message from server and place in message or user_message body
+            //if this user/self sent message place in user/self message div
+            //otherwise place in incoming message div (non-self messages)
             socket.on('message',  function(data) {
 
                 let text = data;
@@ -50,8 +49,8 @@
                 body.scrollTop = body.scrollHeight - body.clientHeight;
             });
 
-            //upon button click send message to server to be broadcast   
-            //require a username before sending messages     
+            // upon button click, ensure username is set, if not, setfocus to username don't do anything
+            // if first message for user, send loadhistory request for this user
             //timestamp needs to come from client and stored as a millisecond integer    
             $('#sendBtn').on('click', function() {
                 if ( $('#username').val() == "" ) {       
@@ -62,7 +61,8 @@
                     //username:message:loadhistory:timestamp
                     const d = new Date();
                     socket.send( $('#username').val() + ':' + $('#message').val() + ':' + d.getTime() + ':'  );
-                    //if we have our username then grayout and readonly username textbox
+                    // if we have our username then grayout and readonly username textbox
+                    // set focus to message field and send message to server for chat history to be sent for this userName
                     if (userName == "") {
                         userName = $('#username').val()
                         document.getElementById("username").setAttribute("readonly", "readonly");
@@ -115,8 +115,8 @@
 //            }
 //        }
 
-        //DIRTY FIX way (html inline call) to detect onkeyup event occurred in chat message text
-        //addEventListener in js is not working, possibly due to socketio interference???
+        //DIRTY FIX (html inline call) to detect onkeyup event occurred in chat message text
+        //addEventListener in js is not working properly determine cause later...
         function check_for_enter(event) {
             event.preventDefault();
             if (event.keyCode == 13){

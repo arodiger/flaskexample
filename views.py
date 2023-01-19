@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template
 import requests
 
-#BASE = "http://127.0.0.1:5000/"
-BASE = "http://anthonyrodiger.com/"
+BASE = "http://127.0.0.1:5000/"
+# BASE = "http://anthonyrodiger.com/"
 
 views = Blueprint(__name__, "views")
 
