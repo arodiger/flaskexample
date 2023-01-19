@@ -18,8 +18,8 @@
             document.getElementById("sendBtn").textContent = "Login";
             document.getElementById("username").value = "";     //force firefox on a page reload to placeholder text
             document.getElementById("username").focus();
-            var socket = io.connect("http://127.0.0.1:5000")
-//            var socket = io.connect("http://anthonyrodiger.com")
+            // var socket = io.connect("http://127.0.0.1:5000")
+           var socket = io.connect("http://anthonyrodiger.com")
 
             socket.on('connect', function(auth) {                
 //                alert(auth)
