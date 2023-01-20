@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One</title>
@@ -18,8 +18,9 @@
             document.getElementById("sendBtn").textContent = "Login";
             document.getElementById("username").value = "";     //force firefox on a page reload to placeholder text
             document.getElementById("username").focus();
-            // var socket = io.connect("http://127.0.0.1:5000")
-           var socket = io.connect("http://anthonyrodiger.com")
+            var socket = io.connect("{{paramHostNamePort}}")
+            // var socket = io.connect("http://127.0.0.1:5000/")     # development
+            // var socket = io.connect("http://anthonyrodiger.com")  # production
 
             socket.on('connect', function(auth) {                
 //                alert(auth)
@@ -91,7 +92,7 @@
     </script>
     <div class="container">
         <div class="header">
-            <H1>{{pageOneParam1}}</H1>
+            <H1>{{paramChatHeaderName}}</H1>
         </div>
             <div id="messages" class="body">
 

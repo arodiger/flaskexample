@@ -4,6 +4,9 @@ from flask_restful import Api, Resource, reqparse, abort
 from flask_socketio import SocketIO, send, join_room, leave_room
 from flask_session import Session
 import mypyLogger
+# read in configurations.ini, add database class, code for writing and reading chat info into db
+# determine the db scheme, chat room?, unique identifier?, login info?
+
 
 application = Flask(__name__)
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
@@ -77,6 +80,7 @@ def handle_message(message):
         currentLoggedInSessions.append(clientSession)
     mypyLogger.logger.debug(webChat)
     if (webChat["loadhistory"] == LOADHISTORY ):           #client request to load history
+        # query db for chatHistory POSTGRESDB SELECT
         for entry in chatHistory:
             msg = entry["username"] + ":" + entry["message"] + ":" + entry["time_stamp"]
             send(msg, to=clientSession)                 #only send history to client requesting
@@ -89,6 +93,7 @@ def handle_message(message):
     else:
         if ( len(webChat["message"]) > 0):              #only send msg if there is data
             send(message, broadcast=True)
+            # insert msg into db POSTGRESDB INSERT
             chatHistory.append(webChat)
             mypyLogger.logger.debug(chatHistory)
 
