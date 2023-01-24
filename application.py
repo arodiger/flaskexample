@@ -3,12 +3,21 @@ from views import views
 from flask_restful import Api, Resource, reqparse, abort
 from flask_socketio import SocketIO, send, join_room, leave_room
 from flask_session import Session
+import json
 import mypyLogger
-# read in configurations.ini, add database class, code for writing and reading chat info into db
-# determine the db scheme, chat room?, unique identifier?, login info?
 
+from postDB import Database
+import confighelper
+ 
+# read in configurations.ini file
+config = confighelper.read_config()
+config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
 
-application = Flask(__name__)
+# get connection to postgres database
+webchatDB = Database()
+webchatDB.initialize()
+
+application = Flask(__name__)                           # AWS doesn't like app.py, utilize different name
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
@@ -36,13 +45,14 @@ class Users(Resource):
         mypyLogger.logger.debug("inside get of tempUser")
         return "", 200
 
-
-class Video(Resource):                                  #create resource class and methods that will satisfy api calls
+# create resource class and methods that will satisfy api calls
+class Video(Resource):          
     def get(self, video_id):
-        if video_id not in videos:
-            return videos                               #return entire dictionary
-        else:
-            return videos[video_id]
+        selectAllQuery = "SELECT * FROM public.webchat"
+        queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
+        #commit the transaction
+        webchatDB.commit()
+        return queryResults
 
     def put(self, video_id):
         abortIfVideoExists(video_id)
@@ -51,17 +61,20 @@ class Video(Resource):                                  #create resource class a
         return videos[video_id], 201
 
     def delete(self, video_id):                         #modified to delete all
-        abortIfVideoIdDoesntExist(video_id)
-        videos.clear()                                  #modified to delete all
-        # del videos[video_id]
+        selectAllQuery = "TRUNCATE TABLE public.webchat"
+        queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
+        #commit the transaction
+        webchatDB.commit()
         return "", 204
 
 chatRoomSessionList = []        # [ {chatRoomSession} ]
 chatRoomSession = {}            # {"sessionid":"" , "username": ""}
 currentLoggedInSessions = []    #[sessionid, sessionid]
 
-chatHistory = []                # [ {webChat}, {webChat}]
-webChat = {}                    # {"username":"", "message":"", "time_stamp":"", "loadhistory":""}
+chatHistory = []                # [ {clientData}, {clientData}]
+clientData = {}                    # {"username":"", "message":"", "time_stamp":"", "loadhistory":""}
+
+tempDict = {}
 
 usernameMessage = []
 LOADHISTORY = "LOADHISTORY"
@@ -73,29 +86,38 @@ LOADHISTORY = "LOADHISTORY"
 @socketio.on('message')
 def handle_message(message):
     global chatRoomSession
-    usernameMessage = message.split(":")
-    webChat = {"username": usernameMessage[0], "message": usernameMessage[1], "time_stamp":usernameMessage[2], "loadhistory": usernameMessage[3]}
+    clientData = json.loads(message)
     clientSession = request.sid
     if clientSession not in currentLoggedInSessions:
         currentLoggedInSessions.append(clientSession)
-    mypyLogger.logger.debug(webChat)
-    if (webChat["loadhistory"] == LOADHISTORY ):           #client request to load history
-        # query db for chatHistory POSTGRESDB SELECT
-        for entry in chatHistory:
-            msg = entry["username"] + ":" + entry["message"] + ":" + entry["time_stamp"]
-            send(msg, to=clientSession)                 #only send history to client requesting
+    mypyLogger.logger.debug(clientData)
+    if (clientData["loadhistory"] == LOADHISTORY ):           #client request to load history
+        # query db for chatHistory
+        selectAllQuery = "SELECT * FROM public.webchat"
+        queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
+        #commit the transaction
+        webchatDB.commit()
+        for entry in queryResults:
+            testJson = json.dumps(entry)
+            send(testJson, to=clientSession)                 #only send history to client requesting
 
         join_room('WebChatRoom')
-        chatRoomSession = { "sessionid": clientSession, "username": webChat["username"] }
+        chatRoomSession = { "sessionid": clientSession, "username": clientData["username"] }
         chatRoomSessionList.append(chatRoomSession)
 
-        send(f'{webChat["username"]} : has entered the chat. :',to='WebChatRoom', include_self=False)
+        # send(f'{clientData["username"]} : has entered the chat. :',to='WebChatRoom', include_self=False)
+        clientData["message"] = "has entered the chat"
+        joinChatMessage = json.dumps(clientData)
+        send(joinChatMessage,to='WebChatRoom', include_self=False)
     else:
-        if ( len(webChat["message"]) > 0):              #only send msg if there is data
+        if ( len(clientData["message"]) > 0):              #only send msg if there is data
             send(message, broadcast=True)
-            # insert msg into db POSTGRESDB INSERT
-            chatHistory.append(webChat)
+            chatHistory.append(clientData)
             mypyLogger.logger.debug(chatHistory)
+            # ##########insert msg into db POSTGRESDB INSERT##########
+            webchatDB.insert_into_db(clientData,tablename=config_table_name)
+            webchatDB.commit()            
+            # ##########insert msg into db POSTGRESDB INSERT##########
 
 
 # # this handler uses JSON data
@@ -124,7 +146,7 @@ def test_disconnect():
     for chatRoomDict in chatRoomSessionList:
         if chatRoomDict["sessionid"] == clientSession:
             chatRoomSessionList.remove(chatRoomDict)            #removed from chat room session dictionary
-            send(f'{chatRoomDict["username"]} : has left the chat:',skip_sid=clientSession, broadcast=True)
+            send(json.dumps({"username": chatRoomDict["username"], "message": "has left the chat"}), skip_sid=clientSession, broadcast=True)
             leave_room("WebChatRoom", clientSession)
 
 

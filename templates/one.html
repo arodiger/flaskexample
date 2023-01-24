@@ -19,31 +19,30 @@
             document.getElementById("username").value = "";     //force firefox on a page reload to placeholder text
             document.getElementById("username").focus();
             var socket = io.connect("{{paramHostNamePort}}")
-            // var socket = io.connect("http://127.0.0.1:5000/")     # development
+            // var socket = io.connect("http://127.0.0.1:5000/")    // # development
             // var socket = io.connect("http://anthonyrodiger.com")  # production
 
-            socket.on('connect', function(auth) {                
+//             socket.on('connect', function(auth) {                
 //                alert(auth)
 //                    socket.send( "LOGDATA:  Socket connection established!");
-            });
+//             });
 
-            //catch message from server and place in message or user_message body
-            //if this user/self sent message place in user/self message div
-            //otherwise place in incoming message div (non-self messages)
+            //catch message from server and place in message or user_message body div
+            // if time_stamp is null, server initiated informative message, don't pass null to date() obj
+            // display timestamp in client's locat time zone
             socket.on('message',  function(data) {
 
-                let text = data;
-                const myArray = text.split(":");
-                const date = new Date(parseInt(myArray[2]));
+                const obj = JSON.parse(data);
+                const date01 = ( obj.time_stamp == null ?  new Date() : new Date(parseInt( obj.time_stamp )) );
 
-                if (data.includes($('#username').val()) ) {
-                    $('#messages').append($('<p class="user_message">').text( myArray[1] ));
-                    $('#messages').append($('<p class="usermessageDateTime">').text(date.toLocaleTimeString('en-US')));
+                if ( obj.username == ( $('#username').val() ) ) {
+                    $('#messages').append($('<p class="user_message">').text( obj.message ));
+                    $('#messages').append($('<p class="usermessageDateTime">').text(date01.toLocaleTimeString('en-US')));
                 }
                 else{
-                    $('#messages').append($('<b class="message">').text( myArray[0]  + ":" ));
-                    $('#messages').append($('<p class="message">').text(  myArray[1] ));
-                    $('#messages').append($('<p class="messageDateTime">').text(date.toLocaleTimeString('en-US')));
+                    $('#messages').append($('<b class="message">').text( obj.username  + ":" ));
+                    $('#messages').append($('<p class="message">').text(  obj.message ));
+                    $('#messages').append($('<p class="messageDateTime">').text(date01.toLocaleTimeString('en-US')));
                 }
                 //always scroll to bottom of messages
                 var body = document.querySelector('#messages');
@@ -58,24 +57,21 @@
                     document.getElementById("username").focus();
                 }
                 else{
-                    //may want to move this send message to bottom of else
-                    //username:message:loadhistory:timestamp
-                    const d = new Date();
-                    socket.send( $('#username').val() + ':' + $('#message').val() + ':' + d.getTime() + ':'  );
                     // if we have our username then grayout and readonly username textbox
                     // set focus to message field and send message to server for chat history to be sent for this userName
-                    if (userName == "") {
-                        userName = $('#username').val()
+                    if ( !userLoggedIn ) {
                         document.getElementById("username").setAttribute("readonly", "readonly");
                         inputBlur('#username');
                         document.getElementById("message").removeAttribute("readonly");
                         document.getElementById("message").focus();
                         document.getElementById("sendBtn").textContent = "Send";
                         userLoggedIn = true;
-                        socket.send(userName+":"+"::LOADHISTORY");  //no message is sent, just user and loadhistory request
+                        // send loadhistory request with username no message
+                        socket.send('{"username" : "' + $('#username').val() + '" , ' + ' "loadhistory" : '  + '"LOADHISTORY" }');  //no message is sent, just user and loadhistory request
                     }
                     else{
-                    
+                        const dateObj = new Date();
+                        socket.send( '{"username" : "' + $('#username').val() + '" , ' + ' "message" : "' + $('#message').val() + '" , ' + ' "time_stamp" : "' + dateObj.getTime() + '" , ' + ' "loadhistory" : ' + '""' +' }' );
                     }
                 }
                 clearFields();
