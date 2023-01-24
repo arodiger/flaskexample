@@ -9,17 +9,18 @@ import mypyLogger
 from postDB import Database
 import confighelper
  
-# read in configurations.ini file
-config = confighelper.read_config()
-config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
+# # read in configurations.ini file
+# config = confighelper.read_config()
+# config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
 
-# get connection to postgres database
-webchatDB = Database()
-webchatDB.initialize()
+# # get connection to postgres database
+# webchatDB = Database()
+# webchatDB.initialize()
 
 application = Flask(__name__)                           # AWS doesn't like app.py, utilize different name
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
+
 
 application.register_blueprint(views,url_prefix="/")    #setup my views.py file to handle the direction of pages
 api = Api(application)                                  #wrap our application with the api
@@ -66,6 +67,21 @@ class Video(Resource):
         #commit the transaction
         webchatDB.commit()
         return "", 204
+
+
+
+# read in configurations.ini file
+config = confighelper.read_config()
+config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
+
+# get connection to postgres database
+webchatDB = Database()
+webchatDB.initialize()
+
+
+
+
+
 
 chatRoomSessionList = []        # [ {chatRoomSession} ]
 chatRoomSession = {}            # {"sessionid":"" , "username": ""}
