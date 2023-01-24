@@ -7,7 +7,6 @@ import os
 MYPYCONFIG_INI = os.environ.get('MYPYCONFIG_INI', 'PRODUCTION').upper()
 # either DEVELOPMENT OR PRODUCTION will be pre-pended to form section title name
 webSettings = MYPYCONFIG_INI + "_FLASK_WEBSettings"
-# webSettings = "PRODUCTION_FLASK_WEBSettings"
 
 # read in conifgurations.ini file
 config = confighelper.read_config()

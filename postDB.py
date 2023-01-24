@@ -1,3 +1,6 @@
+
+# psycopg2-binary==2.9.5 (place in requirements.txt, this will install binaries) 
+# fix for lacking library on AWS linux2, know issue, else elastic beanstalk will fail
 import psycopg2 
 import mypyLogger
 import confighelper
@@ -6,7 +9,6 @@ import os
 MYPYCONFIG_INI = os.environ.get('MYPYCONFIG_INI', 'PRODUCTION').upper()
 # either DEVELOPMENT OR PRODUCTION will be pre-pended to form section title name
 postgressDBSettings = MYPYCONFIG_INI + "_POSTGRES_DBSettings"
-# postgressDBSettings = "PRODUCTION_POSTGRES_DBSettings"
 
 # read in conifgurations.ini file
 config = confighelper.read_config()

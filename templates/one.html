@@ -18,6 +18,7 @@
             document.getElementById("sendBtn").textContent = "Login";
             document.getElementById("username").value = "";     //force firefox on a page reload to placeholder text
             document.getElementById("username").focus();
+            // server reads in connection info from config file and passes to client
             var socket = io.connect("{{paramHostNamePort}}")
             // var socket = io.connect("http://127.0.0.1:5000/")    // # development
             // var socket = io.connect("http://anthonyrodiger.com")  # production
@@ -29,7 +30,7 @@
 
             //catch message from server and place in message or user_message body div
             // if time_stamp is null, server initiated informative message, don't pass null to date() obj
-            // display timestamp in client's locat time zone
+            // display timestamp in client's local time zone
             socket.on('message',  function(data) {
 
                 const obj = JSON.parse(data);
@@ -81,6 +82,7 @@
         function clearFields() {
             document.getElementById("message").value = "";
         }
+        
         function inputBlur(i){
             $(i).addClass("blurredDefaultText");
         }

@@ -21,7 +21,6 @@ application = Flask(__name__)                           # AWS doesn't like app.p
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
-
 application.register_blueprint(views,url_prefix="/")    #setup my views.py file to handle the direction of pages
 api = Api(application)                                  #wrap our application with the api
 
@@ -67,7 +66,6 @@ class Video(Resource):
         #commit the transaction
         webchatDB.commit()
         return "", 204
-
 
 
 chatRoomSessionList = []        # [ {chatRoomSession} ]

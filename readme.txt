@@ -37,3 +37,9 @@
         if using curl
 #> curl http://localhost:5000/video json={dictionary} 
 
+# 1/24/2023 AWS error and fix, 
+# 1/24/2023 fix for : Error: pg_config executable not found. (needed for psycopg2)
+# 1/24/2023 contd. one option is to install the binaries vs having all files avail for build
+# 1/24/2023 contd. psycopg2-binary==2.9.5   (place in requirements.txt, this will install binaries)
+# 1/24/2023 contd. otherwise, you will need to use platform hooks to pre-install the dependencies that are needed to compile it 
+
