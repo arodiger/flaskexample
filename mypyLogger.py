@@ -10,9 +10,9 @@ import datetime as dt
 # when deployed into production the env var will not be set, therefore debug logging 
 # will automatically be disabled
 
-# import os
-# MYPYLOGGER_LOGLEVEL = os.environ.get('MYPYLOGGER_LOGLEVEL', 'WARNING').upper()
-MYPYLOGGER_LOGLEVEL = "WARNING"
+import os
+MYPYLOGGER_LOGLEVEL = os.environ.get('MYPYLOGGER_LOGLEVEL', 'WARNING').upper()
+# MYPYLOGGER_LOGLEVEL = "WARNING"
 
 # $env:MYPYLOGGER_LOGLEVEL="DEBUG"                 # POWERSHELL creates environment variable
 # Get-ChildItem -Path Env:\MYPYLOGGER_LOGLEVEL     # POWERSHELL get/display environment variable
