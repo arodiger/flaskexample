@@ -3,10 +3,10 @@ import mypyLogger
 import confighelper
 
 import os
-MYPYCONFIG_INI = os.environ.get('MYPYCONFIG_INI', 'PRODUCTION').upper()
-# either DEVELOPMENT OR PRODUCTION will be pre-pended to form section title name
-postgressDBSettings = MYPYCONFIG_INI + "_POSTGRES_DBSettings"
-# postgressDBSettings = "PRODUCTION_POSTGRES_DBSettings"
+# MYPYCONFIG_INI = os.environ.get('MYPYCONFIG_INI', 'PRODUCTION').upper()
+# # either DEVELOPMENT OR PRODUCTION will be pre-pended to form section title name
+# postgressDBSettings = MYPYCONFIG_INI + "_POSTGRES_DBSettings"
+postgressDBSettings = "PRODUCTION_POSTGRES_DBSettings"
 
 # read in conifgurations.ini file
 config = confighelper.read_config()

@@ -9,13 +9,13 @@ import mypyLogger
 from postDB import Database
 import confighelper
  
-# # read in configurations.ini file
-# config = confighelper.read_config()
-# config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
+# read in configurations.ini file
+config = confighelper.read_config()
+config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
 
-# # get connection to postgres database
-# webchatDB = Database()
-# webchatDB.initialize()
+# get connection to postgres database
+webchatDB = Database()
+webchatDB.initialize()
 
 application = Flask(__name__)                           # AWS doesn't like app.py, utilize different name
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
@@ -67,19 +67,6 @@ class Video(Resource):
         #commit the transaction
         webchatDB.commit()
         return "", 204
-
-
-
-# read in configurations.ini file
-config = confighelper.read_config()
-config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
-
-# get connection to postgres database
-webchatDB = Database()
-webchatDB.initialize()
-
-
-
 
 
 
