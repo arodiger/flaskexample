@@ -11,7 +11,8 @@ import datetime as dt
 # will automatically be disabled
 
 import os
-MYPYLOGGER_LOGLEVEL = os.environ.get('MYPYLOGGER_LOGLEVEL', 'WARNING').upper()
+# MYPYLOGGER_LOGLEVEL = os.environ.get('MYPYLOGGER_LOGLEVEL', 'WARNING').upper()
+MYPYLOGGER_LOGLEVEL = os.environ.get('MYPYLOGGER_LOGLEVEL', 'DEBUG').upper()
 
 # $env:MYPYLOGGER_LOGLEVEL="DEBUG"                 # POWERSHELL creates environment variable
 # Get-ChildItem -Path Env:\MYPYLOGGER_LOGLEVEL     # POWERSHELL get/display environment variable
