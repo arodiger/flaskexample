@@ -43,3 +43,14 @@
 # 1/24/2023 contd. psycopg2-binary==2.9.5   (place in requirements.txt, this will install binaries)
 # 1/24/2023 contd. otherwise, you will need to use platform hooks to pre-install the dependencies that are needed to compile it 
 
+# 1/24/23 AWS application files location
+# 1/24/23 location of my application files which eleastic beanstalk has deployed on my behalf:
+# 1/24/23 /var/app/current
+# 1/24/23 in the /tmp/deployment/application folder during deployment and the moved to /var/app/current afterward
+
+# 1/24/23 AWS log files location
+# 1/24/23 location of log files while EB is deploying my application via codepipeline:
+# 1/24/23 /var/log
+# 1/24/23 /var/log/eb-engine.log has been beneficial to see errors while EB is installing my app, 
+# 1/24/23 lib dependency issues have been found here
+

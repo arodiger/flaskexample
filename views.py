@@ -20,31 +20,46 @@ views = Blueprint(__name__, "views")
 
 @views.route('/')
 def home():
+    # insert any code required before loading home/base page
     return render_template("home.html", homeParam1="Home Param #1")
 
 @views.route('/one')
 def One():
+    # check for registration and/or login
     return render_template("one.html", paramChatHeaderName="WebChat", paramHostNamePort=BASE_URL)
 
 @views.route('/two')
 def two():
+    # check for registration and/or login
     return render_template("two.html", pageTwoParam1="Page two param #1")
 
 
-# make restapi calls during routing to html pages, just for testing
-@views.route('/restapiput')
-def userRestAPIput():
-    response = requests.put(BASE_URL + "video/1" , json={"likes": 10, "name": "tim", "views": 100000} )   
-    response = requests.put(BASE_URL + "video/2" , json={"likes": 20, "name": "john", "views": 200000} )   
-    response = requests.put(BASE_URL + "video/3" , json={"likes": 30, "name": "george", "views": 300000} )   
-    return render_template("RESTapiput.html", restapiputparam1=response.json())
+# "/utils" endpoint handler, authentication and/or registration checks could be enforced here before 
+# allowing the execution of the restAPI CRUD calls.
+@views.route('/utils')
+def utilsRestApiGet():
+#     response = requests.put(BASE_URL + "video/1" , json={"likes": 10, "name": "tim", "views": 100000} )   
+    response = requests.get(BASE_URL + "utils/8675309")
+    return render_template("utils.html", restapigetparam1=response.json())
 
-@views.route('/restapiget')
-def userRestAPIget():
-    response = requests.get(BASE_URL + "video/0")       #give a number outside of current count will return all videos
-    return render_template("RESTapiget.html", restapigetparam1=response.json())
 
-@views.route('/restapidelete')
-def userRestAPIdelete():
-    response = requests.delete(BASE_URL + "video/1")       
-    return render_template("RESTapidelete.html", restapideleteparam1="")
+
+#######################################     OLD CODE        #######################################
+# # make restapi calls during routing to html pages, just for testing
+# @views.route('/restapiput')
+# def userRestAPIput():
+#     response = requests.put(BASE_URL + "video/1" , json={"likes": 10, "name": "tim", "views": 100000} )   
+#     response = requests.put(BASE_URL + "video/2" , json={"likes": 20, "name": "john", "views": 200000} )   
+#     response = requests.put(BASE_URL + "video/3" , json={"likes": 30, "name": "george", "views": 300000} )   
+#     return render_template("RESTapiput.html", restapiputparam1=response.json())
+
+# @views.route('/restapiget')
+# def userRestAPIget():
+#     response = requests.get(BASE_URL + "video/0")       #give a number outside of current count will return all videos
+#     return render_template("RESTapiget.html", restapigetparam1=response.json())
+
+# @views.route('/restapidelete')
+# def userRestAPIdelete():
+#     response = requests.delete(BASE_URL + "video/1")       
+#     return render_template("RESTapidelete.html", restapideleteparam1="")
+#######################################     OLD CODE        #######################################

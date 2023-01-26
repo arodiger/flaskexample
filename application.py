@@ -40,32 +40,47 @@ def abortIfVideoExists(video_id):
     if video_id in videos: 
         abort(409, message="Video already exists with that id")
 
-class Users(Resource):
-    def get(self, user_id):
-        mypyLogger.logger.debug("inside get of tempUser")
-        return "", 200
 
 # create resource class and methods that will satisfy api calls
-class Video(Resource):          
-    def get(self, video_id):
-        selectAllQuery = "SELECT * FROM public.webchat"
-        queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
-        #commit the transaction
-        webchatDB.commit()
-        return queryResults
+class ChatUtils(Resource):
+    def post(self):
+        title = request.json['title']
+        content = request.json['content']
+        temp = {'chat' : 'POST', 'content' : 'POST content' }
+        return temp
 
-    def put(self, video_id):
-        abortIfVideoExists(video_id)
-        args = video_put_args.parse_args()
-        videos[video_id] = args
-        return videos[video_id], 201
+    def get(self):
+        temp = {'chat' : 'GET', 'content' : 'GET content' }
+        return temp
 
-    def delete(self, video_id):                         #modified to delete all
+    def delete(self):                         #modified to delete all
         selectAllQuery = "TRUNCATE TABLE public.webchat"
         queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
         #commit the transaction
         webchatDB.commit()
         return "", 204
+
+
+# create resource class and methods that will satisfy api calls
+class DebugUtils(Resource):
+    def post(self):
+        title = request.json['title']
+        content = request.json['content']
+        temp = {'debug' : 'POST', 'content' : 'POST content' }
+        return temp
+
+    def get(self):
+        temp = {'debug' : 'GET', 'content' : 'GET content' }
+        return temp
+
+# create resource class and methods that will satisfy api calls
+class Utils(Resource):
+    def get(self, utils_id):
+        selectAllQuery = "SELECT * FROM public.webchat"
+        qResults = webchatDB.select_webchat_history(query=selectAllQuery)
+        #commit the transaction
+        webchatDB.commit()
+        return qResults
 
 
 chatRoomSessionList = []        # [ {chatRoomSession} ]
@@ -121,19 +136,6 @@ def handle_message(message):
             # ##########insert msg into db POSTGRESDB INSERT##########
 
 
-# # this handler uses JSON data
-@socketio.on('json')
-def handle_json(json):
-    mypyLogger.logger.debug("***************************************************")
-    mypyLogger.logger.debug("SERVER Received JSON message: " + str(json))
-    mypyLogger.logger.debug("***************************************************")
-
-# registering connect handler 
-# @socketio.on('connect')
-# def test_connect(auth):
-#    mypyLogger.logger.debug(f"SERVER Client connected message: {auth}")
-#    print(f"SERVER Client connected message: {auth}")
-
 # registering disconnect handler 
 # remove the client from the client session list and from the chat room session dictionary
 # implement leave_room here, then we can add room to send(message,room)
@@ -151,15 +153,70 @@ def test_disconnect():
             leave_room("WebChatRoom", clientSession)
 
 
-# @socketio.on('join')
-# def on_join(data):
-#     send('someone has entered the room.')
 
-api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
-api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource
+# registering the classes to be the restAPI CRUD handlers for requested endpoints
+api.add_resource(Utils, "/utils/<int:utils_id>")                # /utils/1, endpoint which requires int to be passes
+api.add_resource(ChatUtils, "/ChatAdmin", "/chatadmin")         # /ChatAdmin, /chatadmin is the endpoints 
+api.add_resource(DebugUtils, "/DebugAdmin", "/debugadmin")      # /DebugAdmin, /debugadmin is the endpoints
 
 if __name__ == "__main__":
     socketio.run(application,host="localhost", port=5000, debug=False, log_output=False)
     application.run(debug=False)
+
+
+
+
+#######################################     OLD CODE        #######################################
+# class Users(Resource):
+#     def get(self, user_id):
+#         mypyLogger.logger.debug("inside get of tempUser")
+#         return "", 200
+
+# # create resource class and methods that will satisfy api calls
+# class Video(Resource):          
+#     def get(self, video_id):
+#         selectAllQuery = "SELECT * FROM public.webchat"
+#         queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
+#         #commit the transaction
+#         webchatDB.commit()
+#         return queryResults
+
+#     def put(self, video_id):
+#         abortIfVideoExists(video_id)
+#         args = video_put_args.parse_args()
+#         videos[video_id] = args
+#         return videos[video_id], 201
+
+#     def delete(self, video_id):                         #modified to delete all
+#         selectAllQuery = "TRUNCATE TABLE public.webchat"
+#         queryResults = webchatDB.select_webchat_history(query=selectAllQuery)
+#         #commit the transaction
+#         webchatDB.commit()
+#         return "", 204
+
+# api.add_resource(Video, "/video/<int:video_id>")        #register video class as a resource
+# api.add_resource(Users, "/Users/<int:user_id>")         #register user class as a resource
+#register Utils class as a resource
+
+
+# @socketio.on('join')
+# def on_join(data):
+#     send('someone has entered the room.')
+
+# # this handler uses JSON data
+# @socketio.on('json')
+# def handle_json(json):
+#     mypyLogger.logger.debug("***************************************************")
+#     mypyLogger.logger.debug("SERVER Received JSON message: " + str(json))
+#     mypyLogger.logger.debug("***************************************************")
+
+# registering connect handler 
+# @socketio.on('connect')
+# def test_connect(auth):
+#    mypyLogger.logger.debug(f"SERVER Client connected message: {auth}")
+#    print(f"SERVER Client connected message: {auth}")
+
+
+#######################################     OLD CODE        #######################################
 
 
