@@ -5,32 +5,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="static/css/homepg.css">    
 </head>
 <body>
-    <div><h1>Flask Home Page</h1>
-    <!-- <p>Parameter passed: {{ homeParam1 }}</p> -->
-</div>
-<div>
-    <p>
-        <span>- </span>
-        <a href="/one">WebChat</a>
-    </p>
-    <!-- <p>
-        <span>2. </span>
-        <a href="/utils">SELECT ALL CHAT HISTORY</a>
-    </p> -->
-    <p>
-        <span>- </span>
-        <a href="/two">WebChatAdmin</a>
-    </p>
-    <!-- <p>
-        <span>- </span>
-        <a href="/restapiget">RestAPI: SELECT ALL CHAT HISTORY</a>
-    </p>
-    <p>
-        <span>- </span>
-        <a href="/restapidelete">RestAPI: TRUNCATE CHAT TABLE</a>
-    </p> -->
-</div>
+    <div><h1 class="apptitle" >Home Page</h1>
+        <!-- <p>Parameter passed: {{ homeParam1 }}</p> -->
+        <p>
+            <span>- </span>
+            <a class="applink" href="/one">WebChat App</a>
+        </p>
+        <p>
+            <span>- </span>
+            <a class="applink" href="/two">WebChat Admin</a>
+        </p>
+        <h1 class="imgtitle" >AWS Deployment Design</h1>
+        <img class="two" src="{{url_for('static', filename='webchatdesign.png')}}" alt="AWSDeployment" width="600" height="800">    
+    </div>
 </body>
 </html>
