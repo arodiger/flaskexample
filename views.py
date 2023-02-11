@@ -33,6 +33,11 @@ def two():
     # check for registration and/or login
     return render_template("two.html", pageTwoParam1="Page two param #1")
 
+@views.route('/loginreg')
+def loginreg():
+    # check for registration and/or login
+    return render_template("loginreg.html", paramHostNamePort=BASE_URL)
+
 
 # "/utils" endpoint handler, authentication and/or registration checks could be enforced here before 
 # allowing the execution of the restAPI CRUD calls.

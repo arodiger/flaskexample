@@ -18,6 +18,7 @@ webchatDB = Database()
 webchatDB.initialize()
 
 application = Flask(__name__)                           # AWS doesn't like app.py, utilize different name
+application.config['SECRET_KEY'] = 'a9ea845876aa4e4ea6e65ac196752d69'
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
 
@@ -30,15 +31,18 @@ video_put_args.add_argument('name', type=str, help='Name of video is required', 
 video_put_args.add_argument("views", type=int, help="Views of video is required", required=True)
 video_put_args.add_argument("likes", type=int, help="Likes on video is required", required=True)
 
-videos = {}
+# create login and/or registration class and methods that will satisfy api calls
+# if valid username & password, then return jwt token
+class LoginReg(Resource):
+    def post(self):
+        title = request.json['username']
+        content = request.json['password']
+        temp = {'loginreg' : 'POST', 'content' : 'POST content' }
+        return temp
 
-def abortIfVideoIdDoesntExist(video_id):
-    if video_id not in videos:
-        abort(404, message="Video not valid")
-
-def abortIfVideoExists(video_id):
-    if video_id in videos: 
-        abort(409, message="Video already exists with that id")
+    def get(self):
+        temp = {'loginreg' : 'GET', 'content' : 'GET content' }
+        return temp
 
 
 # create resource class and methods that will satisfy api calls
@@ -78,7 +82,8 @@ class Utils(Resource):
     def get(self, utils_id):
         selectAllQuery = "SELECT * FROM public.webchat"
         qResults = webchatDB.select_webchat_history(query=selectAllQuery)
-        #commit the transaction
+        
+        
         webchatDB.commit()
         return qResults
 
@@ -158,6 +163,7 @@ def test_disconnect():
 api.add_resource(Utils, "/utils/<int:utils_id>")                # /utils/1, endpoint which requires int to be passes
 api.add_resource(ChatUtils, "/ChatAdmin", "/chatadmin")         # /ChatAdmin, /chatadmin is the endpoints 
 api.add_resource(DebugUtils, "/DebugAdmin", "/debugadmin")      # /DebugAdmin, /debugadmin is the endpoints
+api.add_resource(LoginReg, "/loginreg")
 
 if __name__ == "__main__":
     socketio.run(application,host="localhost", port=5000, debug=False, log_output=False)
@@ -167,6 +173,16 @@ if __name__ == "__main__":
 
 
 #######################################     OLD CODE        #######################################
+# videos = {}
+
+# def abortIfVideoIdDoesntExist(video_id):
+#     if video_id not in videos:
+#         abort(404, message="Video not valid")
+
+# def abortIfVideoExists(video_id):
+#     if video_id in videos: 
+#         abort(409, message="Video already exists with that id")
+
 # class Users(Resource):
 #     def get(self, user_id):
 #         mypyLogger.logger.debug("inside get of tempUser")
