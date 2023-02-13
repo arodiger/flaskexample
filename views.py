@@ -26,7 +26,7 @@ def home():
 @views.route('/one')
 def One():
     # check for registration and/or login
-    return render_template("one.html", paramChatHeaderName="WebChat", paramHostNamePort=BASE_URL)
+    return render_template("one.html", paramChatHeaderName="Chat", paramHostNamePort=BASE_URL)
 
 @views.route('/two')
 def two():
