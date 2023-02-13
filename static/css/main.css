@@ -1,3 +1,10 @@
+/*  note
+once we utilize "float: left or right" for our text entries
+"clear: both" must be immediately called to start a new line 
+before new text is displayed.
+*/
+
+
 @import url(
 "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
@@ -43,6 +50,8 @@ body{
 }
 
 .message{
+    clear: both;
+    float: left;
     background-color: #ffffff;
     padding: 10px;
     color: #878787;
@@ -55,7 +64,10 @@ body{
 }
 
 .user_message{
-    margin-left: auto;
+    /* margin-left: auto; */
+    /* margin-left: 20px; */
+    clear: both;
+    float: right;
     background-color: #ffffff;
     padding: 10px;
     color: #878787;
@@ -65,10 +77,12 @@ body{
     word-wrap: break-word;
     line-height: 1.25em;
     margin: 0em; 
-
+    justify-content: right;
 }
 
 .messageDateTime{
+    clear: both;
+    float: left;
     font-size: 9px;
     padding: 10px;
     color: rgb(87, 87, 87);
@@ -81,6 +95,8 @@ body{
 }
 
 .usermessageDateTime{
+    clear: both;
+    float: right;
     margin-left: auto;
     padding: 10px;
     color: rgb(87, 87, 87);
