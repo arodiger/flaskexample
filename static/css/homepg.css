@@ -11,8 +11,6 @@
     line-height: 2em;
 }
 
-
-
 html, body{
     /* display: flex; */
     justify-content: center;
@@ -96,4 +94,40 @@ img.two {
 }
 .grid-container > div:nth-child(6){
     grid-column: span 1;
+}
+
+@media screen and (max-width: 650px) {
+    .grid-container > div {
+        /* background-color: lightsalmon; */
+        background-color: #f1f1f1;
+        text-align: left;
+        padding: 5px;
+        /* border: 1px solid black; */
+    }
+    .apptitle {
+        font-weight: 400;
+        font-size: 13px;
+        /* color: dodgerblue; */
+        color: #575757;
+        margin: 0;
+    }
+    .applink{
+        font-size: 12px;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+    .description{
+        color: #575757;
+        font-weight: 600;
+        font-size: 10px;
+        letter-spacing: .5px;
+    
+    }
+    .imgtitle{
+        color: #575757;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+    }
+        
 }
