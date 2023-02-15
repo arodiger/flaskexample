@@ -14,13 +14,11 @@
 
 
 html, body{
-    /* height: 100vh; */
-    /* height: 100%; */
-    /* background-color: dodgerblue; */
-    display: flex;
+    /* display: flex; */
     justify-content: center;
     align-items: center;
-	background-color: rgb(231, 231, 231);
+	/* background-color: rgb(231, 231, 231); */
+    background-color: #f1f1f1;
 }
 img.two {
     height: 100%;
@@ -29,19 +27,73 @@ img.two {
 }
 .apptitle {
 	font-weight: 400;
-    font-size: 30px;
-	color: dodgerblue;
+    font-size: 15px;
+	/* color: dodgerblue; */
+    color: #575757;
     margin: 0;
 }
 
 .applink{
     font-size: 15px;
     margin: 0;
+	letter-spacing: 1.25px;
 }
+.description{
+    color: #575757;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 1.0px;
 
+}
 .imgtitle{
-    font-size: 15px;
-	font-weight: 400;
+    color: #575757;
+    font-size: 12px;
+	font-weight: 500;
 	letter-spacing: 1.5px;
 }
 
+/* grid is one column six rows  */
+.grid-container {
+    /* background-color: lightgreen; */
+    max-width: 600px;
+    max-height: 800px;
+    margin: 0 auto;
+    display: grid;
+    /* grid-template-columns: 600px; */
+    grid-template-columns: 1fr;
+    /* grid-template-rows: 75px 50px 50px 50px 50px 600px; */
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 10fr;
+    /* gap: 5px; */
+    justify-items: stretch;    
+    align-items: stretch; 
+    /* justify means going across left and right / columns  */
+    /* align means going up and down / rows */
+}
+.grid-container > div {
+    /* background-color: lightsalmon; */
+    background-color: #f1f1f1;
+    text-align: left;
+    padding: 10px;
+    /* border: 1px solid black; */
+}
+.grid-container > div:nth-child(1){
+    grid-column: 1 / span 1;
+    text-align: right;
+    /* background-color: white; */
+}
+.grid-container > div:nth-child(2){
+    grid-column: span 1;
+}
+.grid-container > div:nth-child(3){
+    grid-column: span 1;
+}
+.grid-container > div:nth-child(4){
+    grid-column: span 1;
+}
+.grid-container > div:nth-child(5){
+    grid-column: span 1;
+    text-align: right;
+}
+.grid-container > div:nth-child(6){
+    grid-column: span 1;
+}

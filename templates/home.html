@@ -8,23 +8,31 @@
     <link rel="stylesheet" type="text/css" href="static/css/homepg.css">    
 </head>
 <body>
-    <div><h1 class="apptitle" >Home Page</h1>
-        <!-- <p>Parameter passed: {{ homeParam1 }}</p> -->
-        <p>
+    <div class="grid-container">
+        <div>
+            <h1 class="apptitle" >anthonyrodiger.com</h1>
+        </div>
+        <div>
             <span>- </span>
-            <a class="applink" href="/one">WebChat App (socket) Demo</a>
-        </p>
-        <p>
+            <a class="applink" href="/one">WebChat app demo</a>
+            <a class="description">  | flask socket | postgres |</a>
+        </div>
+        <div>
             <span>- </span>
-            <a class="applink" href="/two">WebChat Admin (restAPI)</a>
-        </p>
-        <p>
+            <a class="applink" href="/two">WebChat admin</a>
+            <a class="description">  | restAPI |</a>
+        </div>
+        <div>
             <span>- </span>
-            <a class="applink" href="/loginreg">Login / Registration (bcrypt - JWT token) Demo</a>
-        </p>
-        <p></p>
-        <h1 class="imgtitle" >AWS Deployment Design</h1>
-        <img class="two" src="{{url_for('static', filename='webchatdesign.png')}}" alt="AWSDeployment" width="600" height="800">    
+            <a class="applink" href="/loginreg">Login / Registration demo</a>
+            <a class="description">  | bcrypt | JWT token | local storage |</a>
+        </div>
+        <div>
+            <h1 class="imgtitle" >AWS Deployment Design</h1>
+        </div>
+        <div>
+            <img class="two" src="{{url_for('static', filename='webchatdesign.png')}}" alt="AWSDeployment" width="600" height="800">    
+        </div>
     </div>
 </body>
 </html>
