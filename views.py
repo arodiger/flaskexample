@@ -60,28 +60,52 @@ def utilsRestApiGet():
 def initcookiesRestApiGet():
     # gather fingerprint info from client header
     # fingerprint algorithim:  md5(Sec-Ch-Ua + User-Agent + Accept-Language )
-    mypyLogger.logger.debug("initCookiesRestApiGet:: Begin function")    
-    header_dict = dict(request.headers)
-    fingerprintSEC = header_dict['Sec-Ch-Ua']
-    fingerprintUSER = header_dict['User-Agent']
-    fingerprintSERVER = header_dict['Accept-Language']
-    
-    str2hash = fingerprintSEC + fingerprintUSER + fingerprintSERVER
-    mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprint: {str2hash}")    
-    fingerprintHasObj = hashlib.md5(str2hash.encode())
-    requestPayloadFingerprint  = fingerprintHasObj.hexdigest()
+    try:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: Begin function")    
+        header_dict = dict(request.headers)
+        fingerprintSEC = header_dict['Sec-Ch-Ua']
+        fingerprintUSER = header_dict['User-Agent']
+        fingerprintSERVER = header_dict['Accept-Language']
+        
+        str2hash = fingerprintSEC + fingerprintUSER + fingerprintSERVER
+        mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprint: {str2hash}")    
+        fingerprintHasObj = hashlib.md5(str2hash.encode())
+        requestPayloadFingerprint  = fingerprintHasObj.hexdigest()
 
-    res = make_response()
-    lease = 10 * 24 * 60 * 60  # 10 days in seconds
+        res = make_response()
+        lease = 10 * 24 * 60 * 60  # 10 days in seconds
 
-    res.set_cookie( "cookiePayloadFingerprint", value=requestPayloadFingerprint,
-        max_age=lease, expires=None, path="/", domain=None, secure=False, httponly=False )
+        res.set_cookie( "cookiePayloadFingerprint", value=requestPayloadFingerprint,
+            max_age=lease, expires=None, path="/", domain=None, secure=False, httponly=False )
 
-    mypyLogger.logger.debug("initCookiesRestApiGet:: set_cookie complete, now add access-control-allow-origin")    
+        mypyLogger.logger.debug("initCookiesRestApiGet:: set_cookie complete, now add access-control-allow-origin")    
 
-    res.headers.add("Access-Control-Allow-Origin", "*")
-    mypyLogger.logger.debug("initCookiesRestApiGet:: End function")    
-    return res
+        res.headers.add("Access-Control-Allow-Origin", "*")
+        mypyLogger.logger.debug("initCookiesRestApiGet:: End function")    
+
+    except SyntaxError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: SyntaxError occurred")    
+    except TypeError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: TypeError occurred")    
+    except NameError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: NameError occurred")    
+    except IndexError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: IndexError occurred")    
+    except KeyError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: KeyError occurred")    
+    except ValueError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: ValueError occurred")    
+    except AttributeError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: AttributeError occurred")    
+    except IOError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: IOError occurred")    
+    except ZeroDivisionError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: ZeroDivisionError occurred")    
+    except ImportError:
+        mypyLogger.logger.debug("initCookiesRestApiGet:: ImportError occurred")    
+    finally:
+        return res
+
 
 # ensure client fingerprint cookie delivered equals dynamically generated client fingerprint cookie
 @views.route('/gentoken', methods=['POST'])
