@@ -60,12 +60,14 @@ def utilsRestApiGet():
 def initcookiesRestApiGet():
     # gather fingerprint info from client header
     # fingerprint algorithim:  md5(Sec-Ch-Ua + User-Agent + Accept-Language )
+    mypyLogger.logger.debug("initCookiesRestApiGet:: Begin function")    
     header_dict = dict(request.headers)
     fingerprintSEC = header_dict['Sec-Ch-Ua']
     fingerprintUSER = header_dict['User-Agent']
     fingerprintSERVER = header_dict['Accept-Language']
     
     str2hash = fingerprintSEC + fingerprintUSER + fingerprintSERVER
+    mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprint: {str2hash}")    
     fingerprintHasObj = hashlib.md5(str2hash.encode())
     requestPayloadFingerprint  = fingerprintHasObj.hexdigest()
 
@@ -75,8 +77,10 @@ def initcookiesRestApiGet():
     res.set_cookie( "cookiePayloadFingerprint", value=requestPayloadFingerprint,
         max_age=lease, expires=None, path="/", domain=None, secure=False, httponly=False )
 
-    res.headers.add("Access-Control-Allow-Origin", "*")
+    mypyLogger.logger.debug("initCookiesRestApiGet:: set_cookie complete, now add access-control-allow-origin")    
 
+    res.headers.add("Access-Control-Allow-Origin", "*")
+    mypyLogger.logger.debug("initCookiesRestApiGet:: End function")    
     return res
 
 # ensure client fingerprint cookie delivered equals dynamically generated client fingerprint cookie
