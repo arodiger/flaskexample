@@ -1,8 +1,14 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, request, session, render_template, jsonify, make_response
 import requests
 import confighelper
 import mypyLogger
 import os
+from datetime import datetime, timedelta
+import jwt
+import json
+import base64
+import hashlib
+
 
 MYPYCONFIG_INI = os.environ.get('MYPYCONFIG_INI', 'PRODUCTION').upper()
 # either DEVELOPMENT OR PRODUCTION will be pre-pended to form section title name
@@ -13,6 +19,7 @@ config = confighelper.read_config()
 BASE_URL = config[webSettings]["ini_base_url"]
 if (BASE_URL == None):
     mypyLogger.logger.debug("Unable to read base_url from configurations.ini file")    
+
 # BASE_URL = "http://127.0.0.1:5000/"
 # BASE_URL = "http://anthonyrodiger.com/"
 
@@ -36,6 +43,7 @@ def two():
 @views.route('/loginreg')
 def loginreg():
     # check for registration and/or login
+    # render loginreg.html and let the javascript perform the login and token verification logic
     return render_template("loginreg.html", paramHostNamePort=BASE_URL)
 
 
@@ -48,8 +56,151 @@ def utilsRestApiGet():
     return render_template("utils.html", restapigetparam1=response.json())
 
 
+@views.route('/initcookies', methods=['POST'])
+def initcookiesRestApiGet():
+    # gather fingerprint info from client header
+    # fingerprint algorithim:  md5(Sec-Ch-Ua + User-Agent + Accept-Language )
+    header_dict = dict(request.headers)
+    fingerprintSEC = header_dict['Sec-Ch-Ua']
+    fingerprintUSER = header_dict['User-Agent']
+    fingerprintSERVER = header_dict['Accept-Language']
+    
+    str2hash = fingerprintSEC + fingerprintUSER + fingerprintSERVER
+    fingerprintHasObj = hashlib.md5(str2hash.encode())
+    requestPayloadFingerprint  = fingerprintHasObj.hexdigest()
+
+    res = make_response()
+    lease = 10 * 24 * 60 * 60  # 10 days in seconds
+
+    res.set_cookie( "cookiePayloadFingerprint", value=requestPayloadFingerprint,
+        max_age=lease, expires=None, path="/", domain=None, secure=False, httponly=False )
+
+    res.headers.add("Access-Control-Allow-Origin", "*")
+
+    return res
+
+# ensure client fingerprint cookie delivered equals dynamically generated client fingerprint cookie
+@views.route('/gentoken', methods=['POST'])
+def mygentokenRestApiGet():
+    # gather fingerprint info from client header
+    # fingerprint algorithim:  md5(Sec-Ch-Ua + User-Agent + Accept-Language )
+    header_dict = dict(request.headers)
+    fingerprintSEC = header_dict['Sec-Ch-Ua']
+    fingerprintUSER = header_dict['User-Agent']
+    fingerprintSERVER = header_dict['Accept-Language']
+    
+    str2hash = fingerprintSEC + fingerprintUSER + fingerprintSERVER
+    fingerprintHasObj = hashlib.md5(str2hash.encode())
+    requestDynamicPayloadFingerprint  = fingerprintHasObj.hexdigest()
+
+    clientCookies = dict(request.cookies)
+    cookiePayloadFingerprint = clientCookies['cookiePayloadFingerprint']
+    if (requestDynamicPayloadFingerprint == cookiePayloadFingerprint):
+        userFingerprintValid = True
+
+        # retrieve from the body data, username password 
+        string_data = request.get_data(as_text=True)
+        json_data = json.loads(string_data)
+        encodedUsername = json_data['username']
+        encodedPassword = json_data['password']
+        # decode data
+        decodedUsername = base64.b64decode(encodedUsername)
+        decodedPassword = base64.b64decode(encodedPassword)
+        strUsername = str(decodedUsername,'UTF-8')
+        strPassword = str(decodedPassword, 'UTF-8')
+
+        # check to ensure they are in the database
+        
+
+        # encode to generate token to send back to the client
+        # token = jwt.encode({ 'user': 'anthonyrodiger' , 'expiration': str(datetime.utcnow() + timedelta(seconds=60))} , 'a9ea845876aa4e4ea6e65ac196752d69' )
+        token = jwt.encode({ 'fingerprint': str2hash ,'password': strPassword , 'user': strUsername , 'expiration': str(datetime.utcnow() + timedelta(seconds=60))} , 'a9ea845876aa4e4ea6e65ac196752d69' )
+
+        res = make_response(jsonify({'token': token}))
+        lease = 10 * 24 * 60 * 60  # 10 days in seconds
+
+        res.set_cookie( "refreshToken", value=token,
+            max_age=lease, expires=None, path="/", domain=None, secure=False, httponly=False )
+
+        res.set_cookie( "cookiePayloadFingerprint", value=requestDynamicPayloadFingerprint,
+            max_age=lease, expires=None, path="/", domain=None, secure=False, httponly=False )
+
+        res.headers.add("Access-Control-Allow-Origin", "*")
+
+        return res          # new
+    else:
+        mypyLogger.logger.debug("Client Fingerprint doesn't match dynamically generated client fingerprint")    
+        return 
+   
+
+
+@views.route('/getitgentoken')
+def mygetitgentokenRestApiGet():
+    token = jwt.encode({ 'user': 'anthonyrodiger' , 'expiration': str(datetime.utcnow() + timedelta(seconds=60))} , 'a9ea845876aa4e4ea6e65ac196752d69' )
+    temp_token = jsonify({'token': token})
+    # Enable Access-Control-Allow-Origin
+    temp_token.headers.add("Access-Control-Allow-Origin", "*")
+
+    return temp_token
+
+
+# Login page
+@views.route('/login', methods=['POST'])
+def login():
+    if request.form['username'] and request.form['password'] == '123456':
+        session['logged_in'] = True
+
+        token = jwt.encode({ 'user': request.form['username'] , 'expiration': str(datetime.utcnow() + timedelta(seconds=60))} , views.config['SECRET_KEY'] )
+        return jsonify({'token': token})
+        # return jsonify({'token': token.decode('utf-8')})
+    else:
+        return make_response('Unable to verify', 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed "'})
+
+
+
+
+
 
 #######################################     OLD CODE        #######################################
+
+# headers = CaseInsensitiveDict()
+# headers["Accept"] = "application/json"
+# headers["Authorization"] = "Bearer {token}"
+
+
+# resp = requests.get(url, headers=headers)
+
+# print(resp.status_code)
+#######################################
+
+# old begin
+    # temp_token = jsonify({'token': token})
+    # print("@@@@@@@@@@@@@  gentoken POST called @@@@@@@@@@@@@")
+    # temp_token.headers.add("Access-Control-Allow-Origin", "*")
+    # temp_token.set_cookie("testcookiekey", "testcookievalue")
+    # # temp_token.set_cookie( 'refreshToken',
+    # #     value=token.encode('utf-8'),
+    # #     max_age=500,
+    # #     expires=None,
+    # #     secure=False
+    # # )
+# old end
+
+#######################################
+
+# class MyGenTokenClass(Resource):
+#     def get(self, mygentoken_id):
+#         data = request.json()
+#         if request.form['username'] and request.form['password'] == '123456':
+#             token = jwt.encode({ 'user': request.form['username'] , 'expiration': str(datetime.utcnow() + timedelta(seconds=60))} , app.config['SECRET_KEY'] )
+#             return jsonify({'token': token})
+#             # return jsonify({'token': token.decode('utf-8')})
+#         else:
+#             return make_response('Unable to verify', 403, {'WWW-Authenticate': 'Basic realm: "Authentication Failed "'})
+#######################################
+
+
+
 # # make restapi calls during routing to html pages, just for testing
 # @views.route('/restapiput')
 # def userRestAPIput():

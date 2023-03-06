@@ -9,7 +9,7 @@ import mypyLogger
 from postDB import Database
 import confighelper
  
-# read in configurations.ini file
+ # read in configurations.ini file
 config = confighelper.read_config()
 config_table_name = config["NewDatabaseInitSettings"]["ini_table_name"]
 
@@ -18,6 +18,7 @@ webchatDB = Database()
 webchatDB.initialize()
 
 application = Flask(__name__)                           # AWS doesn't like app.py, utilize different name
+# make random uuid, convert uuid to a 32-character hexadecimal string
 application.config['SECRET_KEY'] = 'a9ea845876aa4e4ea6e65ac196752d69'
 Session(application)                                    # invoke server side sessions for our chat application, manage_session=False
 socketio = SocketIO(application, manage_session=False, logger=False, engineio_logger=False, cors_allowed_origins="*")  #setup socket
@@ -82,8 +83,6 @@ class Utils(Resource):
     def get(self, utils_id):
         selectAllQuery = "SELECT * FROM public.webchat"
         qResults = webchatDB.select_webchat_history(query=selectAllQuery)
-        
-        
         webchatDB.commit()
         return qResults
 
@@ -95,9 +94,6 @@ currentLoggedInSessions = []    #[sessionid, sessionid]
 chatHistory = []                # [ {clientData}, {clientData}]
 clientData = {}                    # {"username":"", "message":"", "time_stamp":"", "loadhistory":""}
 
-tempDict = {}
-
-usernameMessage = []
 LOADHISTORY = "LOADHISTORY"
 # Flask-SocketIO, registering handlers for events
 # socket handler accepts message and broadcast out to all connected users
@@ -164,6 +160,7 @@ api.add_resource(Utils, "/utils/<int:utils_id>")                # /utils/1, endp
 api.add_resource(ChatUtils, "/ChatAdmin", "/chatadmin")         # /ChatAdmin, /chatadmin is the endpoints 
 api.add_resource(DebugUtils, "/DebugAdmin", "/debugadmin")      # /DebugAdmin, /debugadmin is the endpoints
 api.add_resource(LoginReg, "/loginreg")
+# api.add_resource(LoginReg, "/loginreg")
 
 if __name__ == "__main__":
     socketio.run(application,host="localhost", port=5000, debug=False, log_output=False)

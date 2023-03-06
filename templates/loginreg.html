@@ -12,8 +12,8 @@
 </head>
 
 <body>
-	<header>
-		<h1 class="heading">AnthonyRodiger.com</h1>
+		<header>
+		<h1 class="heading">anthonyrodiger.com</h1>
 		<h3 class="title">Login & Registration Form</h3>
 	</header>
 
@@ -35,6 +35,7 @@
 			<!-- login form -->
 			<div class="login-box">
 				<input type="email"
+					id="loginEmail"
 					class="email ele"
 					placeholder="youremail@email.com">
 				<input type="password"
@@ -64,6 +65,9 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		var paramURL = "{{paramHostNamePort}}"
+	</script>
 	<script src="static/js/loginreg.js"></script>
 
 </body>

@@ -51,7 +51,7 @@ img.two {
 	letter-spacing: 1.5px;
 }
 
-/* grid is one column six rows  */
+/* grid is one column seven rows  */
 .grid-container {
     background-color: #f1f1f1;
     max-width: 600px;
@@ -116,9 +116,6 @@ img.two {
 .grid-container > div:nth-child(7){
     grid-column: span 1;
     text-align: center;
-    /* background:linear-gradient(to right, transparent, #17f3fd); */
-    /* animation: animate_one 2s linear ; */
-    /* object-fit: fill; */
 }
 
 

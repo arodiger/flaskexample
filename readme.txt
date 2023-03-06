@@ -54,3 +54,21 @@
 # 1/24/23 /var/log/eb-engine.log has been beneficial to see errors while EB is installing my app, 
 # 1/24/23 lib dependency issues have been found here
 
+# CORS  documentation: https://flask-cors.corydolphin.com/en/latest/api.html#extension
+# For now I am using the following line of code in specific endpoint functions:
+#     temp_token.headers.add("Access-Control-Allow-Origin", "*")
+# If you require the client to pass authentication headers (e.g. cookies) 
+# the value can not be * — it must be a fully qualified domain!    
+
+# Flask-CORS supports blueprints out of the box. Simply pass a blueprint instance 
+# to the CORS extension, and everything will just work.
+# One of the simplest configurations. Exposes all resources matching /api/* to
+# CORS and allows the Content-Type header, which is necessary to POST JSON
+# cross origin.
+# CORS(app, resources=r'/api/*')
+
+# Flask-CORS by default doesn't allow cookies.  To allow cookies or authenticated 
+ # requests to be made cross origins, set "supports_credentials" option to True
+ # app = Flask(__name__)
+ # CORS(app, supports_credentials=True)
+
