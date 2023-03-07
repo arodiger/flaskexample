@@ -63,14 +63,35 @@ def initcookiesRestApiGet():
     try:
         mypyLogger.logger.debug("initCookiesRestApiGet:: Begin function")    
         header_dict = dict(request.headers)
-        fingerprintSEC = header_dict['Sec-Ch-Ua']
-        fingerprintUSER = header_dict['User-Agent']
-        fingerprintSERVER = header_dict['Accept-Language']
+
+        if request.headers.get('Sec-Ch-Ua'):
+            fingerprintSEC = header_dict['Sec-Ch-Ua']
+        else:
+            fingerprintSEC = ""
+
+        if request.headers.get('User-Agent'):
+            fingerprintUSER = header_dict['User-Agent']
+        else:
+            fingerprintUSER = ""
+
+        if request.headers.get('Accept-Language'):
+            fingerprintSERVER = header_dict['Accept-Language']
+        else:
+            fingerprintSERVER = ""
+        
+        # fingerprintSEC = header_dict['Sec-Ch-Ua']
+        # fingerprintUSER = header_dict['User-Agent']
+        # fingerprintSERVER = header_dict['Accept-Language']
+        mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprintSEC: " + f"{fingerprintSEC}" )     
+        mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprintUSER: " + f"{fingerprintUSER}" )     
+        mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprintSERVER: " + f"{fingerprintSERVER}" )     
         
         str2hash = fingerprintSEC + fingerprintUSER + fingerprintSERVER
-        mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprint: {str2hash}")    
+        mypyLogger.logger.debug("initCookiesRestApiGet:: fingerprint: " + f"{str2hash}" )     
+
         fingerprintHasObj = hashlib.md5(str2hash.encode())
         requestPayloadFingerprint  = fingerprintHasObj.hexdigest()
+        mypyLogger.logger.debug("initCookiesRestApiGet:: requestPayloadFingerprint: " + f"{requestPayloadFingerprint}" )   
 
         res = make_response()
         lease = 10 * 24 * 60 * 60  # 10 days in seconds
