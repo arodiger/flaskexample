@@ -90,8 +90,8 @@ class Utils(Resource):
 chatRoomSessionList = []        # [ {chatRoomSession} ]
 chatRoomSession = {}            # {"sessionid":"" , "username": ""}
 currentLoggedInSessions = []    #[sessionid, sessionid]
-
-chatHistory = []                # [ {clientData}, {clientData}]
+# chatHistory was original in memory list, now we have postgresSQL for data persistence, could remove
+chatHistory = []                # [ {clientData}, {clientData}] 
 clientData = {}                    # {"username":"", "message":"", "time_stamp":"", "loadhistory":""}
 
 LOADHISTORY = "LOADHISTORY"
@@ -180,11 +180,6 @@ if __name__ == "__main__":
 #     if video_id in videos: 
 #         abort(409, message="Video already exists with that id")
 
-# class Users(Resource):
-#     def get(self, user_id):
-#         mypyLogger.logger.debug("inside get of tempUser")
-#         return "", 200
-
 # # create resource class and methods that will satisfy api calls
 # class Video(Resource):          
 #     def get(self, video_id):
@@ -215,19 +210,6 @@ if __name__ == "__main__":
 # @socketio.on('join')
 # def on_join(data):
 #     send('someone has entered the room.')
-
-# # this handler uses JSON data
-# @socketio.on('json')
-# def handle_json(json):
-#     mypyLogger.logger.debug("***************************************************")
-#     mypyLogger.logger.debug("SERVER Received JSON message: " + str(json))
-#     mypyLogger.logger.debug("***************************************************")
-
-# registering connect handler 
-# @socketio.on('connect')
-# def test_connect(auth):
-#    mypyLogger.logger.debug(f"SERVER Client connected message: {auth}")
-#    print(f"SERVER Client connected message: {auth}")
 
 
 #######################################     OLD CODE        #######################################
